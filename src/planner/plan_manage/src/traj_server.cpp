@@ -5,8 +5,9 @@
 #include "std_msgs/Empty.h"
 #include "visualization_msgs/Marker.h"
 #include <ros/ros.h>
+#include <math.h>
 
-ros::Publisher pos_cmd_pub;
+ros::Publisher pos_cmd_pub, cmd_vis_pub;
 
 quadrotor_msgs::PositionCommand cmd;
 double pos_gain[3] = {0, 0, 0};
@@ -23,6 +24,39 @@ int traj_id_;
 // yaw control
 double last_yaw_, last_yaw_dot_;
 double time_forward_;
+
+void drawCmd(const Eigen::Vector3d& pos, const Eigen::Vector3d& vec, const int& id,
+             const Eigen::Vector4d& color) {
+  visualization_msgs::Marker mk_state;
+  mk_state.header.frame_id = "world";
+  mk_state.header.stamp = ros::Time::now();
+  mk_state.id = id;
+  mk_state.type = visualization_msgs::Marker::ARROW;
+  mk_state.action = visualization_msgs::Marker::ADD;
+
+  mk_state.pose.orientation.w = 1.0;
+  mk_state.scale.x = 0.1;
+  mk_state.scale.y = 0.2;
+  mk_state.scale.z = 0.3;
+
+  geometry_msgs::Point pt;
+  pt.x = pos(0);
+  pt.y = pos(1);
+  pt.z = pos(2);
+  mk_state.points.push_back(pt);
+
+  pt.x = pos(0) + vec(0);
+  pt.y = pos(1) + vec(1);
+  pt.z = pos(2) + vec(2);
+  mk_state.points.push_back(pt);
+
+  mk_state.color.r = color(0);
+  mk_state.color.g = color(1);
+  mk_state.color.b = color(2);
+  mk_state.color.a = color(3);
+
+  cmd_vis_pub.publish(mk_state);
+}
 
 void bsplineCallback(traj_utils::BsplineConstPtr msg)
 {
@@ -71,7 +105,8 @@ void bsplineCallback(traj_utils::BsplineConstPtr msg)
 std::pair<double, double> calculate_yaw(double t_cur, Eigen::Vector3d &pos, ros::Time &time_now, ros::Time &time_last)
 {
   constexpr double PI = 3.1415926;
-  constexpr double YAW_DOT_MAX_PER_SEC = PI;
+  // constexpr double YAW_DOT_MAX_PER_SEC = PI;
+  constexpr double YAW_DOT_MAX_PER_SEC = 1;
   // constexpr double YAW_DOT_DOT_MAX_PER_SEC = PI;
   std::pair<double, double> yaw_yawdot(0, 0);
   double yaw = 0;
@@ -150,12 +185,20 @@ std::pair<double, double> calculate_yaw(double t_cur, Eigen::Vector3d &pos, ros:
 
   if (fabs(yaw - last_yaw_) <= max_yaw_change)
     yaw = 0.5 * last_yaw_ + 0.5 * yaw; // nieve LPF
+  if (isnan(last_yaw_dot_))
+    {
+    last_yaw_dot_ = 0.0;
+    cout << "===============" << endl;
+    cout << last_yaw_dot_ << endl;
+    cout << "===============" << endl;
+    }
   yawdot = 0.5 * last_yaw_dot_ + 0.5 * yawdot;
   last_yaw_ = yaw;
   last_yaw_dot_ = yawdot;
 
   yaw_yawdot.first = yaw;
   yaw_yawdot.second = yawdot;
+
 
   return yaw_yawdot;
 }
@@ -227,6 +270,9 @@ void cmdCallback(const ros::TimerEvent &e)
   last_yaw_ = cmd.yaw;
 
   pos_cmd_pub.publish(cmd);
+
+  Eigen::Vector3d dir(cos(cmd.yaw), sin(cmd.yaw), 0.0);
+  drawCmd(pos, 2 * dir, 2, Eigen::Vector4d(1, 1, 0, 0.7));
 }
 
 int main(int argc, char **argv)
@@ -237,9 +283,10 @@ int main(int argc, char **argv)
 
   ros::Subscriber bspline_sub = nh.subscribe("planning/bspline", 10, bsplineCallback);
 
+  cmd_vis_pub = nh.advertise<visualization_msgs::Marker>("planning/position_cmd_vis", 10);
   pos_cmd_pub = nh.advertise<quadrotor_msgs::PositionCommand>("/position_cmd", 50);
 
-  ros::Timer cmd_timer = nh.createTimer(ros::Duration(0.01), cmdCallback);
+  ros::Timer cmd_timer = nh.createTimer(ros::Duration(0.1), cmdCallback);
 
   /* control parameter */
   cmd.kx[0] = pos_gain[0];

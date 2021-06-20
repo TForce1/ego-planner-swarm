@@ -1,6 +1,6 @@
 <launch>
     <!-- number of moving objects -->
-    <arg name="obj_num" value="10" />
+    <arg name="obj_num" value="1" />
     <arg name="drone_id" value="0"/>
 
     <arg name="map_size_x" value="50.0"/>
@@ -59,7 +59,7 @@
         <arg name="use_distinctive_trajs" value="true" />
         <!-- 1: use 2D Nav Goal to select goal  -->
         <!-- 2: use global waypoints below  -->
-        <arg name="flight_type" value="2" />
+        <arg name="flight_type" value="1" />
         <!-- global waypoints -->
         <!-- It generates a piecewise min-snap traj passing all waypoints -->
         <arg name="point_num" value="4" />

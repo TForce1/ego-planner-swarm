@@ -5,8 +5,8 @@ SET(CMAKE_BUILD_TYPE Release) # Release, RelWithDebInfo
 ADD_COMPILE_OPTIONS(-std=c++11 )
 ADD_COMPILE_OPTIONS(-std=c++14 )
 
-#set(ENABLE_CUDA false)
 set(ENABLE_CUDA false)
+#set(ENABLE_CUDA true)
 
 if(ENABLE_CUDA)
   find_package(CUDA REQUIRED)
@@ -20,7 +20,7 @@ if(ENABLE_CUDA)
 #       -gencode arch=compute_52,code=sm_52; 
 #       -gencode arch=compute_60,code=sm_60;
 #       -gencode arch=compute_61,code=sm_61;
-      -gencode arch=compute_75,code=sm_75;
+     -gencode arch=compute_75,code=sm_75;
   ) 
 
   SET(CUDA_PROPAGATE_HOST_FLAGS OFF)
