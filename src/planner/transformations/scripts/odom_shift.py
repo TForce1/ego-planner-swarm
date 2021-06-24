@@ -31,7 +31,7 @@ class OdomShift:
 
     def transform(self, msg):
         odom_shift_msg = msg
-        odom_shift_msg.pose.pose.position.z = 1.0
+        odom_shift_msg.pose.pose.position.z = 0.1
 
         self.pub.publish(odom_shift_msg)
         print(odom_shift_msg)

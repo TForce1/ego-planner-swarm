@@ -38,7 +38,7 @@ class CameraRotate:
         orientation_msg = Quaternion(rotated[0], rotated[1], rotated[2], rotated[3])
         position_msg = Pose(position=msg.pose.pose.position, orientation=orientation_msg)
         camera_pose_msg = PoseStamped(header=msg.header, pose=position_msg)
-        camera_pose_msg.pose.position.z = 1.1
+        camera_pose_msg.pose.position.z = 0.16
         self.pub.publish(camera_pose_msg)
 
     @staticmethod

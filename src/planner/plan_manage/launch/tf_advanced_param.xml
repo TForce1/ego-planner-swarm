@@ -76,7 +76,7 @@
     <param name="grid_map/local_update_range_z"  value="4.5" /> 
     <param name="grid_map/obstacles_inflation"     value="0.1" /> 
     <param name="grid_map/local_map_margin" value="10"/>
-    <param name="grid_map/ground_height"        value="0.99"/>
+    <param name="grid_map/ground_height"        value="0.05"/>
     <!-- camera parameter -->
     <param name="grid_map/cx" value="$(arg cx)"/>
     <param name="grid_map/cy" value="$(arg cy)"/>
@@ -99,8 +99,8 @@
     <param name="grid_map/min_ray_length" value="0.1"/>
     <param name="grid_map/max_ray_length" value="10.0"/>
 
-    <param name="grid_map/virtual_ceil_height"   value="1.5"/>
-    <param name="grid_map/visualization_truncate_height"   value="1.4"/>
+    <param name="grid_map/virtual_ceil_height"   value="0.4"/>
+    <param name="grid_map/visualization_truncate_height"   value="0.29"/>
     <param name="grid_map/show_occ_time"  value="false"/>
     <param name="grid_map/pose_type"     value="1"/>  
     <param name="grid_map/frame_id"      value="world"/>
@@ -139,5 +139,6 @@
       <!-- Camera Rotation -->
   <node pkg="transformations" name="camera_rotate" type="camera_rotate.py" args="$(arg odometry_topic)" respawn="false" />
   <node pkg="transformations" name="odom_shift" type="odom_shift.py" args="/odom" respawn="false" />
+  <node pkg="transformations" name="odo_mock" type="odom_mock.py" respawn="false" />
 
 </launch>

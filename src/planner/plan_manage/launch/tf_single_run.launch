@@ -9,6 +9,7 @@
     <!-- <arg name="odom_topic" value="/iris_ground_truth" /> -->
     <arg name="odom_topic" value="/odom_z" />
     <arg name="depth_camera_topic" value="/camera/depth/image_raw"/>
+    <!-- <arg name="depth_camera_topic" value="depth_raw"/> -->
     <arg name="camera_pose_topic" value="/camera_pose"/>
 
     <!-- main algorithm params -->

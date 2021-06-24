@@ -120,6 +120,7 @@ void GridMap::initMap(ros::NodeHandle &nh)
   }
   else if (mp_.pose_type_ == ODOMETRY)
   {
+
     odom_sub_.reset(new message_filters::Subscriber<nav_msgs::Odometry>(node_, "grid_map/odom", 100, ros::TransportHints().tcpNoDelay()));
 
     sync_image_odom_.reset(new message_filters::Synchronizer<SyncPolicyImageOdom>(
@@ -132,6 +133,9 @@ void GridMap::initMap(ros::NodeHandle &nh)
       node_.subscribe<sensor_msgs::PointCloud2>("grid_map/cloud", 10, &GridMap::cloudCallback, this);
   indep_odom_sub_ =
       node_.subscribe<nav_msgs::Odometry>("grid_map/odom", 10, &GridMap::odomCallback, this);
+
+  indep_cloud_sub_ =
+      node_.subscribe<sensor_msgs::Image>("/depth_raw", 10, &GridMap::depthCallback, this);
 
   occ_timer_ = node_.createTimer(ros::Duration(0.05), &GridMap::updateOccupancyCallback, this);
   vis_timer_ = node_.createTimer(ros::Duration(0.11), &GridMap::visCallback, this);
@@ -711,10 +715,24 @@ void GridMap::depthPoseCallback(const sensor_msgs::ImageConstPtr &img,
   cv_bridge::CvImagePtr cv_ptr;
   cv_ptr = cv_bridge::toCvCopy(img, img->encoding);
 
+  std::cout << "depth encoding: " << std::endl;
+  std::cout <<  img->encoding << std::endl;
+  cv::Mat tmp;
+  tmp = cv_ptr->image.clone();
+
   if (img->encoding == sensor_msgs::image_encodings::TYPE_32FC1)
   {
     (cv_ptr->image).convertTo(cv_ptr->image, CV_16UC1, mp_.k_depth_scaling_factor_);
   }
+
+   else if (img->encoding == sensor_msgs::image_encodings::BGR8) {
+    std::cout << "in if statement" << std::endl;
+    // (cv_ptr->image).convertTo(cv_ptr->image, CV_8UC1, 1);
+    cv::cvtColor(cv_ptr->image, tmp, cv::COLOR_BGR2GRAY);
+    cv_ptr->image = tmp;//cv_bridge::toCvCopy(tmp, sensor_msgs::image_encodings::TYPE_8UC1);
+    (cv_ptr->image).convertTo(cv_ptr->image, CV_16UC1, (mp_.k_depth_scaling_factor_ * 10.0) / 255.0);
+  }
+
   cv_ptr->image.copyTo(md_.depth_image_);
 
   // std::cout << "depth: " << md_.depth_image_.cols << ", " << md_.depth_image_.rows << std::endl;
@@ -750,6 +768,11 @@ void GridMap::odomCallback(const nav_msgs::OdometryConstPtr &odom)
   md_.camera_pos_(2) = odom->pose.pose.position.z;
 
   md_.has_odom_ = true;
+}
+
+void GridMap::depthCallback(const sensor_msgs::ImageConstPtr& img)
+{
+    std::cout << "depth!" << std::endl;
 }
 
 void GridMap::cloudCallback(const sensor_msgs::PointCloud2ConstPtr &img)
@@ -1013,6 +1036,10 @@ void GridMap::depthOdomCallback(const sensor_msgs::ImageConstPtr &img,
   /* get depth image */
   cv_bridge::CvImagePtr cv_ptr;
   cv_ptr = cv_bridge::toCvCopy(img, img->encoding);
+
+  std::cout << "depth encoding: " << img->encoding << std::endl;
+  cv::Mat tmp;
+  tmp = cv_ptr->image.clone();
   if (img->encoding == sensor_msgs::image_encodings::TYPE_32FC1)
   {
     (cv_ptr->image).convertTo(cv_ptr->image, CV_16UC1, mp_.k_depth_scaling_factor_);
