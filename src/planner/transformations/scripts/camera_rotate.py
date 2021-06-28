@@ -20,7 +20,7 @@ class CameraRotate:
     QUEUE_SIZE=100
     P = math.pi/2
     ROTATION_RPY = [-P, 0, -P]
-
+#    ROTATION_RPY = [0, 0, 0]
     def __init__(self, odometry_topic):
         rospy.init_node(self.NODE_NAME, anonymous=False)
         self.odom = odometry_topic
@@ -43,9 +43,9 @@ class CameraRotate:
 
     @staticmethod
     def quaternion_rotation(rot_quat, quat):
-        quat_mul = quaternion_multiply(quat, rot_quat)
-        return quat_mul / np.linalg.norm(quat_mul)
-
+        #quat_mul = quaternion_multiply(quat, rot_quat)
+        #return quat_mul / np.linalg.norm(quat_mul)
+	return quat
 
 if __name__ == '__main__':
 

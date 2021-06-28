@@ -11,7 +11,7 @@
 import roslib
 import rospy
 import math
-from snapstack_msgs.msg import Goal, State
+#from snapstack_msgs.msg import Goal, State
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from gazebo_msgs.msg import ModelState
@@ -29,17 +29,18 @@ import math
 class GoalToCmdVel:
 
     def __init__(self):
-        self.state=State()
+        #self.state=State()
 
-        self.state.pos.x = rospy.get_param('~x', 0.0)
-        self.state.pos.y = rospy.get_param('~y', 0.0)
-        self.state.pos.z = rospy.get_param('~z', 0.0)
+        #self.state.pos.x = rospy.get_param('~x', 0.0)
+        #self.state.pos.y = rospy.get_param('~y', 0.0)
+        #self.state.pos.z = rospy.get_param('~z', 0.0)
 
-        self.state.quat.x = 0
-        self.state.quat.y = 0
-        self.state.quat.z = 0
-        self.state.quat.w = 1
+        #self.state.quat.x = 0
+        #self.state.quat.y = 0
+        #self.state.quat.z = 0
+        #self.state.quat.w = 1
 
+        #self.state=Odometry()
         self.current_yaw=0.0
 
         #Publishers
@@ -71,19 +72,21 @@ class GoalToCmdVel:
         self.state_initialized=False
 
     def odomCB(self, msg):
-        self.state.pos.x = msg.pose.pose.position.x
-        self.state.pos.y = msg.pose.pose.position.y
-        self.state.pos.z = msg.pose.pose.position.z
+   #     self.state.pos.x = msg.pose.pose.position.x
+  #      self.state.pos.y = msg.pose.pose.position.y
+ #       self.state.pos.z = msg.pose.pose.position.z
+	
+	self.state = msg
 
         (yaw, _, _)=euler_from_quaternion((msg.pose.pose.orientation.x,msg.pose.pose.orientation.y,msg.pose.pose.orientation.z,msg.pose.pose.orientation.w), "szyx")
         
         self.current_yaw = yaw
 
-        self.state.vel = msg.twist.twist.linear
+#        self.state.vel = msg.twist.twist.linear
 
-        self.state.quat=msg.pose.pose.orientation
+#        self.state.quat=msg.pose.pose.orientation
 
-        self.state.w = msg.twist.twist.angular
+#        self.state.w = msg.twist.twist.angular
 
         self.state_initialized=True
 
@@ -108,7 +111,7 @@ class GoalToCmdVel:
         yd2 = self.goal.acceleration.y
 
         v_desired = math.sqrt(xd**2 + yd**2)
-        alpha = self.current_yaw - math.atan2(y - self.state.pos.y, x - self.state.pos.x)
+        alpha = self.current_yaw - math.atan2(y - self.state.pose.pose.position.x, x - self.state.pose.pose.position.x)
         alpha=self.wrapPi(alpha)
         forward=1
 
@@ -117,7 +120,7 @@ class GoalToCmdVel:
         else:
           forward=-1
 
-        dist_error = forward * math.sqrt( (x - self.state.pos.x)**2 + (y - self.state.pos.y)**2  )
+        dist_error = forward * math.sqrt( (x - self.pose.pose.position.x)**2 + (y - self.pose.pose.position.y)**2  )
 
         # if (abs(dist_error)<0.03):
         #   alpha=0

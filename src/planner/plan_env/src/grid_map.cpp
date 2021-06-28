@@ -715,8 +715,8 @@ void GridMap::depthPoseCallback(const sensor_msgs::ImageConstPtr &img,
   cv_bridge::CvImagePtr cv_ptr;
   cv_ptr = cv_bridge::toCvCopy(img, img->encoding);
 
-  std::cout << "depth encoding: " << std::endl;
-  std::cout <<  img->encoding << std::endl;
+  // std::cout << "depth encoding: " << std::endl;
+  // std::cout <<  img->encoding << std::endl;
   cv::Mat tmp;
   tmp = cv_ptr->image.clone();
 
@@ -888,7 +888,8 @@ void GridMap::publishMap()
 
   if (map_pub_.getNumSubscribers() <= 0)
     return;
-
+  std::cout << "publishMap" << std::endl;
+ 
   pcl::PointXYZ pt;
   pcl::PointCloud<pcl::PointXYZ> cloud;
 

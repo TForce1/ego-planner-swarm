@@ -139,6 +139,6 @@
       <!-- Camera Rotation -->
   <node pkg="transformations" name="camera_rotate" type="camera_rotate.py" args="$(arg odometry_topic)" respawn="false" />
   <node pkg="transformations" name="odom_shift" type="odom_shift.py" args="/odom" respawn="false" />
-  <node pkg="transformations" name="odo_mock" type="odom_mock.py" respawn="false" />
+  <!-- node pkg="transformations" name="odom_mock" type="odom_mock.py" respawn="false" /> -->
 
 </launch>
