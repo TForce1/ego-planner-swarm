@@ -21,7 +21,7 @@ from numpy import linalg as LA
 
 from tf.transformations import euler_from_quaternion
 
-from pyquaternion import Quaternion
+# from pyquaternion import Quaternion
 import tf
 import math  
 

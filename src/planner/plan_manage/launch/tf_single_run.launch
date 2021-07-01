@@ -7,8 +7,11 @@
     <arg name="map_size_y" value="25.0"/>
     <arg name="map_size_z" value=" 2.0"/>
     <!-- <arg name="odom_topic" value="/iris_ground_truth" /> -->
-    <arg name="odom_topic" value="/odom_z" />
-    <arg name="depth_camera_topic" value="/camera/depth/image_rect_raw"/>
+    <arg name="odom_topic" value="/odom" />
+    <!-- <arg name="odom_topic" value="/vins_estimator/odometry" /> -->
+    
+    <!-- <arg name="depth_camera_topic" value="/camera/depth/image_rect_raw"/> -->
+    <arg name="depth_camera_topic" value="/camera1/camera/depth/image_rect_raw"/>
     <!-- <arg name="depth_camera_topic" value="depth_raw"/> -->
     <arg name="camera_pose_topic" value="/camera_pose"/>
 
@@ -29,10 +32,10 @@
         <!-- don't set camera pose and depth, if you already set this one! -->
         <arg name="cloud_topic" value="pcl_render_node/cloud"/>
         <!-- intrinsic params of the depth camera -->
-        <arg name="cx" default="320"/>
-        <arg name="cy" default="240"/>
-        <arg name="fx" default="347.997568216904"/>
-        <arg name="fy" default="347.997568216904"/>
+        <arg name="cx" default="320.9726867675781"/>
+        <arg name="cy" default="239.31748962402344"/>
+        <arg name="fx" default="380.0273742675781"/>
+        <arg name="fy" default="380.0273742675781"/>
         <!-- maximum velocity and acceleration the drone will reach -->
         <arg name="max_vel" value="0.25" />
         <arg name="max_acc" value="1" />

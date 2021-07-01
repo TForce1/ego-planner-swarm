@@ -19,8 +19,8 @@ class CameraRotate:
     CAMERA_POSE_TOPIC="camera_pose"
     QUEUE_SIZE=100
     P = math.pi/2
+    # ROTATION_RPY = [-P, 0, -P]
     ROTATION_RPY = [-P, 0, -P]
-#    ROTATION_RPY = [0, 0, 0]
     def __init__(self, odometry_topic):
         rospy.init_node(self.NODE_NAME, anonymous=False)
         self.odom = odometry_topic
@@ -34,18 +34,21 @@ class CameraRotate:
         orientation = msg.pose.pose.orientation
         odom_quat = [orientation.x, orientation.y, orientation.z, orientation.w]
         rotated = self.quaternion_rotation(self.rot_quat, odom_quat)
-
+        x = msg.pose.pose.position.x
+        y = msg.pose.pose.position.y
         orientation_msg = Quaternion(rotated[0], rotated[1], rotated[2], rotated[3])
         position_msg = Pose(position=msg.pose.pose.position, orientation=orientation_msg)
         camera_pose_msg = PoseStamped(header=msg.header, pose=position_msg)
         camera_pose_msg.pose.position.z = 0.16
+        camera_pose_msg.pose.position.x = -1 * x
+        camera_pose_msg.pose.position.y = -1 * y
         self.pub.publish(camera_pose_msg)
 
     @staticmethod
     def quaternion_rotation(rot_quat, quat):
-        #quat_mul = quaternion_multiply(quat, rot_quat)
-        #return quat_mul / np.linalg.norm(quat_mul)
-	return quat
+        quat_mul = quaternion_multiply(quat, rot_quat)
+        return quat_mul / np.linalg.norm(quat_mul)
+	# return quat
 
 if __name__ == '__main__':
 

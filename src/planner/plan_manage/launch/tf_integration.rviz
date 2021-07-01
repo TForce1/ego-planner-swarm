@@ -96,7 +96,7 @@ Visualization Manager:
               Marker Topic: /drone_0_ego_planner_node/optimal_list
               Name: optimal_traj
               Namespaces:
-                "": true
+                {}
               Queue Size: 100
               Value: true
             - Class: rviz/Marker
@@ -265,7 +265,7 @@ Visualization Manager:
         Shaft Length: 1
         Shaft Radius: 0.05000000074505806
         Value: Arrow
-      Topic: /odom_z
+      Topic: /vins_estimator/odometry
       Unreliable: false
       Value: true
     - Class: rviz/Marker
@@ -273,7 +273,7 @@ Visualization Manager:
       Marker Topic: /drone_0_traj_server/planning/position_cmd_vis
       Name: Marker
       Namespaces:
-        "": true
+        {}
       Queue Size: 1
       Value: true
     - Class: rviz/Image
@@ -357,10 +357,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.4647971987724304
+      Pitch: 0.15479719638824463
       Target Frame: <Fixed Frame>
       Value: ThirdPersonFollower (rviz)
-      Yaw: 2.796586513519287
+      Yaw: 3.2315866947174072
     Saved:
       - Class: rviz/FPS
         Enable Stereo Rendering:
