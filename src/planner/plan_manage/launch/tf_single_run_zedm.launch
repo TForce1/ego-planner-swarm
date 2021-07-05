@@ -1,15 +1,26 @@
 <launch>
     <!-- number of moving objects -->
-    <arg name="obj_num" value="10" />
+    <arg name="obj_num" value="1" />
     <arg name="drone_id" value="0"/>
 
     <arg name="map_size_x" value="50.0"/>
     <arg name="map_size_y" value="25.0"/>
     <arg name="map_size_z" value=" 2.0"/>
-    
-    <arg name="odom_topic" value="/$(arg drone_id)/iris_ground_truth" />
+    <!-- <arg name="odom_topic" value="/iris_ground_truth" /> -->
+    <arg name="odom_topic" value="/odom_z" />
+    <!-- <arg name="odom_topic" value="/zedm/zed_topic/odom" /> -->
+    <arg name="depth_camera_topic" value="/camera/aligned_depth_to_color/image_raw"/>
+    <!-- <arg name="depth_camera_topic" value="depth_raw"/> -->
+    <!-- <arg name="depth_camera_topic" value="/zedm/zed_node/depth/depth_registered"/> -->
+    <arg name="camera_pose_topic" value="/camera_pose"/>
+    <!-- <arg name="camera_pose_topic" value="/zedm/zed_node/pose"/> -->
+    <!-- OR: <arg name="camera_pose_topic" value="/zedm/zed_node/pose_with_covariance"/> -->
 
-    <remap from="position_cmd" to="planning/pos_cmd"/>
+
+    <node pkg="transformations" name="camera_rotate" type="camera_rotate.py" args="$(arg odom_topic)" respawn="false" />
+    <node pkg="transformations" name="odom_shift" type="odom_shift.py" args="/odom" respawn="false" />
+
+    
     <!-- main algorithm params -->
     <include file="$(find ego_planner)/launch/tf_advanced_param.xml">
         <arg name="drone_id" value="$(arg drone_id)"/>
@@ -21,33 +32,40 @@
         <!-- camera pose: transform of camera frame in the world frame -->
         <!-- depth topic: depth image, 640x480 by default -->
         <!-- don't set cloud_topic if you already set these ones! -->
-        <arg name="camera_pose_topic" value="/camera_pose"/>
-        <arg name="depth_topic" value="/camera/depth/image_raw"/>
+        <arg name="camera_pose_topic" value="$(arg camera_pose_topic)"/>
+        <arg name="depth_topic" value="$(arg depth_camera_topic)"/>
         <!-- topic of point cloud measurement, such as from LIDAR  -->
         <!-- don't set camera pose and depth, if you already set this one! -->
         <arg name="cloud_topic" value="pcl_render_node/cloud"/>
         <!-- intrinsic params of the depth camera -->
-        <arg name="cx" value="320"/>
-        <arg name="cy" value="240"/>
-        <arg name="fx" value="347.997568216904"/>
-        <arg name="fy" value="347.997568216904"/>
+        <arg name="cx" default="1077.23"/>
+        <arg name="cy" default="566.691"/>
+        <arg name="fx" default="1397.27"/>
+        <arg name="fy" default="=1397.43"/>
         <!-- maximum velocity and acceleration the drone will reach -->
-        <arg name="max_vel" value="2.0" />
-        <arg name="max_acc" value="6.0" />
+        <arg name="max_vel" value="0.25" />
+        <arg name="max_acc" value="1" />
         <!--always set to 1.5 times grater than sensing horizen-->
-        <arg name="planning_horizon" value="15" />
+        <arg name="planning_horizon" value="7.5" />
         <arg name="use_distinctive_trajs" value="true" />
         <!-- 1: use 2D Nav Goal to select goal  -->
         <!-- 2: use global waypoints below  -->
         <arg name="flight_type" value="1" />
         <!-- global waypoints -->
         <!-- It generates a piecewise min-snap traj passing all waypoints -->
+
     </include>
     <!-- trajectory server -->
     <node pkg="ego_planner" name="drone_$(arg drone_id)_traj_server" type="traj_server" output="screen">
-        <remap from="position_cmd" to="planning/pos_cmd"/>
-        <remap from="~planning/bspline" to="planning/bspline"/>
+        <remap from="position_cmd" to="drone_$(arg drone_id)_planning/pos_cmd"/>
+        <remap from="~planning/bspline" to="drone_$(arg drone_id)_planning/bspline"/>
         <param name="traj_server/time_forward" value="1.0" type="double"/>
     </node>
+
+    <node pkg="transformations" 
+        type="goal_odom_to_cmd_vel_state.py" 
+        name="goal_odom_to_cmd_vel_state" 
+        output="screen"
+        args="0 0 0 0 0 0 ego_planner_node/camera_link ego_planner_node/camera 100" />
 
 </launch>

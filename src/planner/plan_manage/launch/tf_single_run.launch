@@ -8,7 +8,7 @@
     <arg name="map_size_z" value=" 2.0"/>
     <!-- <arg name="odom_topic" value="/iris_ground_truth" /> -->
     <arg name="odom_topic" value="/odom_z" />
-    <arg name="depth_camera_topic" value="/camera/depth/image_rect_raw"/>
+    <arg name="depth_camera_topic" value="/camera/aligned_depth_to_color/image_raw"/>
     <!-- <arg name="depth_camera_topic" value="depth_raw"/> -->
     <arg name="camera_pose_topic" value="/camera_pose"/>
 

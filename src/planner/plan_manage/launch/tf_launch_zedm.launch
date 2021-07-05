@@ -1,0 +1,7 @@
+ <launch>
+   <include file="$(find zed_wrapper)/launch/zedm.launch"/>
+   <!-- <include file="$(find ego_planner)/launch/tf_rviz_zedm.launch"/> -->
+    <!-- <include file="$(find ego_planner)/launch/single_run_in_sim.launch"/> -->
+    <!-- <include file="$(find ego_planner)/launch/tf_single_run.launch"/> -->
+   <include file="$(find ego_planner)/launch/tf_single_run_zedm.launch"/>
+ </launch> 

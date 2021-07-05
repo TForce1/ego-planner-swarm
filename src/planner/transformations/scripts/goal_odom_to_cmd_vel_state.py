@@ -14,14 +14,13 @@ import math
 #from snapstack_msgs.msg import Goal, State
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
-from gazebo_msgs.msg import ModelState
 from quadrotor_msgs.msg import PositionCommand
 import numpy as np
 from numpy import linalg as LA
 
 from tf.transformations import euler_from_quaternion
 
-from pyquaternion import Quaternion
+# from pyquaternion import Quaternion
 import tf
 import math  
 
