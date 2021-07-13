@@ -134,9 +134,6 @@ void GridMap::initMap(ros::NodeHandle &nh)
   indep_odom_sub_ =
       node_.subscribe<nav_msgs::Odometry>("grid_map/odom", 10, &GridMap::odomCallback, this);
 
-  indep_cloud_sub_ =
-      node_.subscribe<sensor_msgs::Image>("grid_map/cloud", 10, &GridMap::depthCallback, this);
-
   occ_timer_ = node_.createTimer(ros::Duration(0.05), &GridMap::updateOccupancyCallback, this);
   vis_timer_ = node_.createTimer(ros::Duration(0.11), &GridMap::visCallback, this);
 
@@ -979,7 +976,6 @@ void GridMap::publishMapInflate(bool all_info)
 
   pcl::toROSMsg(cloud, cloud_msg);
   map_inf_pub_.publish(cloud_msg);
-  std::cout << "publishMapInflate" << std::endl;
 
 
   // ROS_INFO("pub map");

@@ -34,18 +34,18 @@ class CameraRotate:
         orientation = msg.pose.pose.orientation
         odom_quat = [orientation.x, orientation.y, orientation.z, orientation.w]
         rotated = self.quaternion_rotation(self.rot_quat, odom_quat)
-
         orientation_msg = Quaternion(rotated[0], rotated[1], rotated[2], rotated[3])
         position_msg = Pose(position=msg.pose.pose.position, orientation=orientation_msg)
         camera_pose_msg = PoseStamped(header=msg.header, pose=position_msg)
         camera_pose_msg.pose.position.z = 0.16
         self.pub.publish(camera_pose_msg)
+        
 
     @staticmethod
     def quaternion_rotation(rot_quat, quat):
-        #quat_mul = quaternion_multiply(quat, rot_quat)
-        #return quat_mul / np.linalg.norm(quat_mul)
-	return quat
+        quat_mul = quaternion_multiply(quat, rot_quat)
+        quat_norm = quat_mul / np.linalg.norm(quat_mul)
+        return quat_norm
 
 if __name__ == '__main__':
 

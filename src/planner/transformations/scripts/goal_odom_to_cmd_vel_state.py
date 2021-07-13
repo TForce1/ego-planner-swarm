@@ -49,7 +49,7 @@ class GoalToCmdVel:
         self.timer = rospy.Timer(rospy.Duration(0.1), self.cmdVelCB)
 
         self.kv =1.0
-        self.kdist = 0.2 #2.5
+        self.kdist =  0.2 #2.5
         self.kw =1.0
         self.kyaw = 0.5
         self.kalpha = 0.0
@@ -71,15 +71,15 @@ class GoalToCmdVel:
         self.state_initialized=False
 
     def odomCB(self, msg):
-   #     self.state.pos.x = msg.pose.pose.position.x
-  #      self.state.pos.y = msg.pose.pose.position.y
- #       self.state.pos.z = msg.pose.pose.position.z
 	
-	self.state = msg
+        self.state = msg
 
-        (yaw, _, _)=euler_from_quaternion((msg.pose.pose.orientation.x,msg.pose.pose.orientation.y,msg.pose.pose.orientation.z,msg.pose.pose.orientation.w), "szyx")
+        # (yaw, _, _) = euler_from_quaternion((msg.pose.pose.orientation.x,msg.pose.pose.orientation.y,msg.pose.pose.orientation.z,msg.pose.pose.orientation.w),
+        #          "szyx")
         
+        yaw = euler_from_quaternion([msg.pose.pose.orientation.x,msg.pose.pose.orientation.y,msg.pose.pose.orientation.z,msg.pose.pose.orientation.w])[2]
         self.current_yaw = yaw
+        # print(self.state.pose.pose.position.x)
 
 #        self.state.vel = msg.twist.twist.linear
 
@@ -119,7 +119,7 @@ class GoalToCmdVel:
         else:
           forward=-1
 
-        dist_error = forward * math.sqrt( (x - self.pose.pose.position.x)**2 + (y - self.pose.pose.position.y)**2  )
+        dist_error = forward * math.sqrt( (x - self.state.pose.pose.position.x)**2 + (y - self.state.pose.pose.position.y)**2  )
 
         # if (abs(dist_error)<0.03):
         #   alpha=0
@@ -141,7 +141,7 @@ class GoalToCmdVel:
 
             twist.linear.x = self.kv * v_desired + self.kdist * dist_error 
             twist.linear.x = max(0, min(0.25, twist.linear.x))
-            twist.angular.z =   self.kyaw * yaw_error + self.kalpha * alpha - self.kw * self.goal.yaw_dot# + self.goal.dyaw
+            twist.angular.z =   - self.kyaw * yaw_error + self.kalpha * alpha + self.kw * self.goal.yaw_dot# + self.goal.dyaw
             twist.angular.z = max(-1.0, min(1.0, twist.angular.z))
 
         self.pubCmdVel.publish(twist)
